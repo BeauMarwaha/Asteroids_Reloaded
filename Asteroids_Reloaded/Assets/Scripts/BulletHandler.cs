@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class BulletHandler : MonoBehaviour {
 
 	//attributes
-	private Dictionary<GameObject, float> bullets = new Dictionary<GameObject, float>();
+	private List<GameObject> bullets = new List<GameObject>();
 	public GameObject bulletPrefab;
 	private float bulletSpeed;
 	
@@ -23,7 +23,7 @@ public class BulletHandler : MonoBehaviour {
 		MoveBullets ();
 	}
 
-	public Dictionary<GameObject, float> Bullets{
+	public List<GameObject> Bullets{
 		get { return bullets; }
 		set { bullets = value; }
 	}
@@ -41,7 +41,7 @@ public class BulletHandler : MonoBehaviour {
 		newBullet.transform.position = new Vector3(newBullet.transform.position.x, newBullet.transform.position.y, .5f);
 
 		//add it to the bullets list
-		bullets.Add (newBullet, initialRotation);
+		bullets.Add (newBullet);
 	}
 
 	/// <summary>
@@ -51,36 +51,55 @@ public class BulletHandler : MonoBehaviour {
 		//create a list to put bullets to be removed in
 		List<GameObject> oldBullets = new List<GameObject>();
 
-		foreach (KeyValuePair<GameObject, float> bullet in bullets) {
-			bullet.Key.transform.position += (Quaternion.Euler (0, 0, bullet.Value) * transform.up) * Time.deltaTime * bulletSpeed;
+		foreach (GameObject bullet in bullets) {
+			bullet.transform.position += bullet.transform.up * Time.deltaTime * bulletSpeed;
 
 			//set the the bullet to be destroyed if off screen
-			if (Camera.main.WorldToViewportPoint(bullet.Key.transform.position).x > 1.1) //if the bullet goes off the right side of the screen
+			if (Camera.main.WorldToViewportPoint(bullet.transform.position).x > 1.1) //if the bullet goes off the right side of the screen
 			{
-				bullet.Key.SetActive(false);
-				oldBullets.Add(bullet.Key);
+				bullet.SetActive(false);
+				oldBullets.Add(bullet);
 			}
-			else if (Camera.main.WorldToViewportPoint(bullet.Key.transform.position).x < -.1) //if the bullet goes off the left side of the screen
+			else if (Camera.main.WorldToViewportPoint(bullet.transform.position).x < -.1) //if the bullet goes off the left side of the screen
 			{
-				bullet.Key.SetActive(false);
-				oldBullets.Add(bullet.Key);
+				bullet.SetActive(false);
+				oldBullets.Add(bullet);
 			}
 			
-			if (Camera.main.WorldToViewportPoint(bullet.Key.transform.position).y > 1.1) //if the bullet goes off the top side of the screen
+			if (Camera.main.WorldToViewportPoint(bullet.transform.position).y > 1.1) //if the bullet goes off the top side of the screen
 			{
-				bullet.Key.SetActive(false);
-				oldBullets.Add(bullet.Key);
+				bullet.SetActive(false);
+				oldBullets.Add(bullet);
 			}
-			else if (Camera.main.WorldToViewportPoint(bullet.Key.transform.position).y < -.1) //if the bullet goes off the bottom side of the screen
+			else if (Camera.main.WorldToViewportPoint(bullet.transform.position).y < -.1) //if the bullet goes off the bottom side of the screen
 			{
-				bullet.Key.SetActive(false);
-				oldBullets.Add(bullet.Key);
+				bullet.SetActive(false);
+				oldBullets.Add(bullet);
 			}
 		}
 
 		//remove old bullets
 		foreach (GameObject oldBullet in oldBullets) {
 			bullets.Remove(oldBullet);
+			Destroy(oldBullet);
+		}
+	}
+
+	/// <summary>
+	/// Removes all bullets from the screen.
+	/// </summary>
+	public void RemoveBullets(){
+		//create a list to put bullets to be removed in
+		List<GameObject> oldBullets = new List<GameObject>();
+
+		foreach (GameObject bullet in bullets) {
+			oldBullets.Add(bullet);
+		}
+
+		//remove old bullets
+		foreach (GameObject oldBullet in oldBullets) {
+			bullets.Remove(oldBullet);
+			Destroy(oldBullet);
 		}
 	}
 }

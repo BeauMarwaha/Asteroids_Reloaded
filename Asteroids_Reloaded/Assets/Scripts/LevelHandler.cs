@@ -12,6 +12,7 @@ public class LevelHandler : MonoBehaviour {
 	private GameObject spaceShip;
 	private VehicleMovement vehicleMovement;
 	private EnemyHandler enemyHandler;
+	private BulletHandler bulletHandler;
 
 	// Use this for initialization
 	void Start () {
@@ -20,6 +21,7 @@ public class LevelHandler : MonoBehaviour {
 		spaceShip = GameObject.Find ("Ship");
 		vehicleMovement = spaceShip.GetComponent<VehicleMovement> ();
 		enemyHandler = this.GetComponent<EnemyHandler> ();
+		bulletHandler = this.GetComponent<BulletHandler> ();
 
 		//inistialize the games first level
 		spaceShip.transform.position = Vector3.zero; //reset player position
@@ -63,6 +65,9 @@ public class LevelHandler : MonoBehaviour {
 	public void ProgressLevel(){
 		//reset vehicle position
 		vehicleMovement.ResetPosition ();
+
+		//remove left over bullets
+		bulletHandler.RemoveBullets ();
 
 		//increase level count
 		currentLevel ++;
